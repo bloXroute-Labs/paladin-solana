@@ -348,4 +348,26 @@ mod tests {
         assert_eq!(expected_vote_cost, vote_cost.sum());
         assert_eq!(expected_none_vote_cost, none_vote_cost.sum());
     }
+
+    #[test]
+    fn transfer_transaction_cost() {
+        solana_logger::setup();
+        let keypair = Keypair::new();
+        let transaction =
+            system_transaction::transfer(&keypair, &Pubkey::new_unique(), 1, Hash::default());
+
+        let sanitized = SanitizedTransaction::try_create(
+            VersionedTransaction::from(transaction),
+            MessageHash::Compute,
+            Some(false),
+            false,
+            SimpleAddressLoader::Disabled,
+            &ReservedAccountKeys::empty_key_set(),
+        )
+        .unwrap();
+
+        let none_vote_cost = CostModel::calculate_cost(&sanitized, &FeatureSet::all_enabled());
+
+        assert_eq!(none_vote_cost.sum(), 17857);
+    }
 }

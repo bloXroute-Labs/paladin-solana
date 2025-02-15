@@ -65,6 +65,10 @@ where
     forwarder: Option<Forwarder<C>>,
     /// Blacklisted accounts
     blacklisted_accounts: HashSet<Pubkey>,
+
+    batch: Vec<ImmutableDeserializedPacket>,
+    batch_start: Instant,
+    batch_interval: Duration,
 }
 
 impl<C, R, S> SchedulerController<C, R, S>
@@ -81,6 +85,7 @@ where
         worker_metrics: Vec<Arc<ConsumeWorkerMetrics>>,
         forwarder: Option<Forwarder<C>>,
         blacklisted_accounts: HashSet<Pubkey>,
+        batch_interval: Duration,
     ) -> Self {
         Self {
             decision_maker,
@@ -94,6 +99,10 @@ where
             worker_metrics,
             forwarder,
             blacklisted_accounts,
+
+            batch: Vec::default(),
+            batch_start: Instant::now(),
+            batch_interval,
         }
     }
 
@@ -123,6 +132,7 @@ where
                 .maybe_report_and_reset_slot(new_leader_slot);
 
             self.receive_completed()?;
+            self.maybe_queue_batch();
             self.process_transactions(&decision)?;
             if self.receive_and_buffer_packets(&decision).is_err() {
                 break;
@@ -144,6 +154,20 @@ where
         }
 
         Ok(())
+    }
+
+    fn maybe_queue_batch(&mut self) {
+        if !self.batch.is_empty() && self.batch_start.elapsed() > self.batch_interval {
+            let (_, buffer_time_us) = measure_us!(Self::buffer_packets(
+                &self.bank_forks,
+                &mut self.container,
+                &mut self.transaction_id_generator,
+                &mut self.count_metrics,
+                self.batch.drain(..),
+            ));
+            self.timing_metrics
+                .update(|metrics| saturating_add_assign!(metrics.buffer_time_us, buffer_time_us));
+        }
     }
 
     /// Process packets based on decision.
@@ -599,6 +623,7 @@ mod tests {
             vec![], // no actual workers with metrics to report, this can be empty
             None,
             HashSet::default(),
+            Duration::from_millis(0),
         );
 
         (test_frame, scheduler_controller)
