@@ -3143,7 +3143,6 @@ impl Bank {
                     tx,
                     MessageHash::Compute,
                     None,
-                    false,
                     self,
                     self.get_reserved_account_keys(),
                 )
@@ -5782,7 +5781,6 @@ impl Bank {
                 tx,
                 MessageHash::Precomputed(message_hash),
                 None,
-                false,
                 self,
                 self.get_reserved_account_keys(),
             )

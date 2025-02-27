@@ -12,7 +12,7 @@ use {
         nonblocking::quic::{
             ConnectionPeerType, ConnectionTable, DEFAULT_MAX_CONNECTIONS_PER_IPADDR_PER_MINUTE,
         },
-        quic::{EndpointKeyUpdater, SpawnServerResult},
+        quic::{EndpointKeyUpdater, QuicServerParams, SpawnServerResult},
         streamer::StakedNodes,
     },
     spl_discriminator::discriminator::SplDiscriminate,
@@ -92,15 +92,15 @@ impl P3Quic {
             // NB: Packets are verified using the usual TPU lane.
             reg_packet_tx,
             exit.clone(),
-            MAX_QUIC_CONNECTIONS_PER_PEER,
             staked_nodes.clone(),
-            MAX_STAKED_CONNECTIONS,
-            MAX_UNSTAKED_CONNECTIONS,
-            MAX_STREAMS_PER_MS,
-            DEFAULT_MAX_CONNECTIONS_PER_IPADDR_PER_MINUTE,
-            // Streams will be kept alive for 300s (5min) if no data is sent.
-            Duration::from_secs(300),
-            DEFAULT_TPU_COALESCE,
+            QuicServerParams {
+                max_connections_per_peer: MAX_QUIC_CONNECTIONS_PER_PEER,
+                max_staked_connections: MAX_STAKED_CONNECTIONS,
+                max_unstaked_connections: MAX_UNSTAKED_CONNECTIONS,
+                max_streams_per_ms: MAX_STREAMS_PER_MS,
+                wait_for_chunk_timeout: Duration::from_secs(300),
+                ..Default::default()
+            },
         )
         .unwrap();
 
@@ -118,15 +118,15 @@ impl P3Quic {
             // NB: Packets are verified using the usual TPU lane.
             mev_packet_tx,
             exit.clone(),
-            MAX_QUIC_CONNECTIONS_PER_PEER,
             staked_nodes.clone(),
-            MAX_STAKED_CONNECTIONS,
-            MAX_UNSTAKED_CONNECTIONS,
-            MAX_STREAMS_PER_MS,
-            DEFAULT_MAX_CONNECTIONS_PER_IPADDR_PER_MINUTE,
-            // Streams will be kept alive for 300s (5min) if no data is sent.
-            Duration::from_secs(300),
-            DEFAULT_TPU_COALESCE,
+            QuicServerParams {
+                max_connections_per_peer: MAX_QUIC_CONNECTIONS_PER_PEER,
+                max_staked_connections: MAX_STAKED_CONNECTIONS,
+                max_unstaked_connections: MAX_UNSTAKED_CONNECTIONS,
+                max_streams_per_ms: MAX_STREAMS_PER_MS,
+                wait_for_chunk_timeout: Duration::from_secs(300),
+                ..Default::default()
+            },
         )
         .unwrap();
 

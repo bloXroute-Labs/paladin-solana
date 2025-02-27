@@ -97,6 +97,8 @@ pub mod unified_scheduler;
 // Fixed thread size seems to be fastest on GCP setup
 pub const NUM_THREADS: u32 = 6;
 
+pub const DEFAULT_BATCH_INTERVAL: Duration = Duration::from_millis(50);
+
 const TOTAL_BUFFERED_PACKETS: usize = 100_000;
 
 const NUM_VOTE_PROCESSING_THREADS: u32 = 2;

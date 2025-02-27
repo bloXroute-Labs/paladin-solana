@@ -32,6 +32,8 @@ pub struct ResolvedTransactionView<D: TransactionData> {
     // Sanitized transactions are guaranteed to have a maximum of 256 keys,
     // because account indexing is done with a u8.
     writable_cache: [bool; 256],
+    /// Wether the transaction should be dropped on revert.
+    drop_on_revert: bool,
 }
 
 impl<D: TransactionData> Deref for ResolvedTransactionView<D> {
@@ -49,6 +51,7 @@ impl<D: TransactionData> ResolvedTransactionView<D> {
         view: TransactionView<true, D>,
         resolved_addresses: Option<LoadedAddresses>,
         reserved_account_keys: &HashSet<Pubkey>,
+        drop_on_revert: bool,
     ) -> Result<Self> {
         let resolved_addresses_ref = resolved_addresses.as_ref();
 
@@ -79,6 +82,7 @@ impl<D: TransactionData> ResolvedTransactionView<D> {
             view,
             resolved_addresses,
             writable_cache,
+            drop_on_revert,
         })
     }
 
@@ -230,7 +234,7 @@ impl<D: TransactionData> SVMTransaction for ResolvedTransactionView<D> {
     }
 
     fn drop_on_revert(&self) -> bool {
-        self.view.drop_on_revert()
+        self.drop_on_revert
     }
 }
 
@@ -281,7 +285,7 @@ mod tests {
         };
         let bytes = bincode::serialize(&transaction).unwrap();
         let view = SanitizedTransactionView::try_new_sanitized(bytes.as_ref()).unwrap();
-        let result = ResolvedTransactionView::try_new(view, None, &HashSet::default());
+        let result = ResolvedTransactionView::try_new(view, None, &HashSet::default(), false);
         assert!(matches!(
             result,
             Err(TransactionViewError::AddressLookupMismatch)
@@ -312,8 +316,12 @@ mod tests {
         };
         let bytes = bincode::serialize(&transaction).unwrap();
         let view = SanitizedTransactionView::try_new_sanitized(bytes.as_ref()).unwrap();
-        let result =
-            ResolvedTransactionView::try_new(view, Some(loaded_addresses), &HashSet::default());
+        let result = ResolvedTransactionView::try_new(
+            view,
+            Some(loaded_addresses),
+            &HashSet::default(),
+            false,
+        );
         assert!(matches!(
             result,
             Err(TransactionViewError::AddressLookupMismatch)
@@ -349,8 +357,12 @@ mod tests {
         };
         let bytes = bincode::serialize(&transaction).unwrap();
         let view = SanitizedTransactionView::try_new_sanitized(bytes.as_ref()).unwrap();
-        let result =
-            ResolvedTransactionView::try_new(view, Some(loaded_addresses), &HashSet::default());
+        let result = ResolvedTransactionView::try_new(
+            view,
+            Some(loaded_addresses),
+            &HashSet::default(),
+            false,
+        );
         assert!(matches!(
             result,
             Err(TransactionViewError::AddressLookupMismatch)
@@ -403,6 +415,7 @@ mod tests {
                 view,
                 Some(loaded_addresses),
                 &reserved_account_keys,
+                false,
             )
             .unwrap();
 
@@ -426,6 +439,7 @@ mod tests {
                 view,
                 Some(loaded_addresses),
                 &reserved_account_keys,
+                false,
             )
             .unwrap();
 
@@ -449,6 +463,7 @@ mod tests {
                 view,
                 Some(loaded_addresses),
                 &reserved_account_keys,
+                false,
             )
             .unwrap();
 
@@ -510,6 +525,7 @@ mod tests {
                 view,
                 Some(loaded_addresses.clone()),
                 &reserved_account_keys,
+                false,
             )
             .unwrap();
 
@@ -529,6 +545,7 @@ mod tests {
                 view,
                 Some(loaded_addresses.clone()),
                 &reserved_account_keys,
+                false,
             )
             .unwrap();
 
@@ -553,6 +570,7 @@ mod tests {
                 view,
                 Some(loaded_addresses.clone()),
                 &reserved_account_keys,
+                false,
             )
             .unwrap();
 

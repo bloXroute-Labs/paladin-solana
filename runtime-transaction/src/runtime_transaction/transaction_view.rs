@@ -43,7 +43,6 @@ impl<D: TransactionData> RuntimeTransaction<SanitizedTransactionView<D>> {
         transaction: SanitizedTransactionView<D>,
         message_hash: MessageHash,
         is_simple_vote_tx: Option<bool>,
-        drop_on_revert: bool,
     ) -> Result<Self> {
         let message_hash = match message_hash {
             MessageHash::Precomputed(hash) => hash,
@@ -68,7 +67,6 @@ impl<D: TransactionData> RuntimeTransaction<SanitizedTransactionView<D>> {
             meta: TransactionMeta {
                 message_hash,
                 is_simple_vote_transaction: is_simple_vote_tx,
-                drop_on_revert,
                 signature_details,
                 compute_budget_instruction_details,
             },
@@ -84,15 +82,20 @@ impl<D: TransactionData> RuntimeTransaction<ResolvedTransactionView<D>> {
         statically_loaded_runtime_tx: RuntimeTransaction<SanitizedTransactionView<D>>,
         loaded_addresses: Option<LoadedAddresses>,
         reserved_account_keys: &HashSet<Pubkey>,
+        drop_on_revert: bool,
     ) -> Result<Self> {
         let RuntimeTransaction { transaction, meta } = statically_loaded_runtime_tx;
         // transaction-view does not distinguish between different types of errors here.
         // return generic sanitize failure error here.
         // these transactions should be immediately dropped, and we generally
         // will not care about the specific error at this point.
-        let transaction =
-            ResolvedTransactionView::try_new(transaction, loaded_addresses, reserved_account_keys)
-                .map_err(|_| TransactionError::SanitizeFailure)?;
+        let transaction = ResolvedTransactionView::try_new(
+            transaction,
+            loaded_addresses,
+            reserved_account_keys,
+            drop_on_revert,
+        )
+        .map_err(|_| TransactionError::SanitizeFailure)?;
         let mut tx = Self { transaction, meta };
         tx.load_dynamic_metadata()?;
 
@@ -224,7 +227,6 @@ mod tests {
                 transaction,
                 MessageHash::Precomputed(hash),
                 None,
-                false,
             )
             .unwrap();
 
@@ -236,6 +238,7 @@ mod tests {
                 static_runtime_transaction,
                 None,
                 &ReservedAccountKeys::empty_key_set(),
+                false,
             )
             .unwrap();
 
@@ -256,13 +259,13 @@ mod tests {
                 transaction_view,
                 MessageHash::Compute,
                 None,
-                false,
             )
             .unwrap();
             let runtime_transaction = RuntimeTransaction::<ResolvedTransactionView<_>>::try_from(
                 runtime_transaction,
                 loaded_addresses,
                 reserved_account_keys,
+                false,
             )
             .unwrap();
 
@@ -323,13 +326,13 @@ mod tests {
                 transaction_view,
                 MessageHash::Compute,
                 None,
-                false,
             )
             .unwrap();
             let runtime_transaction = RuntimeTransaction::<ResolvedTransactionView<_>>::try_from(
                 runtime_transaction,
                 loaded_addresses,
                 reserved_account_keys,
+                false,
             )
             .unwrap();
 
