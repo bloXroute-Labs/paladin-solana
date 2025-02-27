@@ -136,6 +136,12 @@ impl TransactionFrame {
     pub(crate) fn message_offset(&self) -> u16 {
         self.message_header.offset
     }
+
+    /// Return if the transaction should be dropped on revert.
+    #[inline]
+    pub(crate) fn drop_on_revert(&self) -> bool {
+        todo!();
+    }
 }
 
 // Separate implementation for `unsafe` accessor methods.

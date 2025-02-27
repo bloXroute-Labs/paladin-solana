@@ -166,6 +166,12 @@ impl<const SANITIZED: bool, D: TransactionData> TransactionView<SANITIZED, D> {
     pub fn message_data(&self) -> &[u8] {
         &self.data()[usize::from(self.frame.message_offset())..]
     }
+
+    /// Returns whether the transaction should be dropped on revert.
+    #[inline]
+    pub fn drop_on_revert(&self) -> bool {
+        self.frame.drop_on_revert()
+    }
 }
 
 // Implementation that relies on sanitization checks having been run.

@@ -228,6 +228,10 @@ impl<D: TransactionData> SVMTransaction for ResolvedTransactionView<D> {
     fn signatures(&self) -> &[Signature] {
         self.view.signatures()
     }
+
+    fn drop_on_revert(&self) -> bool {
+        self.view.drop_on_revert()
+    }
 }
 
 impl<D: TransactionData> Debug for ResolvedTransactionView<D> {
