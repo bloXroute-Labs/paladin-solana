@@ -2,6 +2,7 @@ use {
     hashbrown::HashMap,
     itertools::izip,
     solana_bundle::bundle_execution::LoadAndExecuteBundleOutput,
+    solana_runtime_transaction::runtime_transaction::RuntimeTransaction,
     solana_sdk::{
         account::ReadableAccount,
         pubkey::Pubkey,
@@ -138,7 +139,10 @@ pub(crate) struct AccountRef<'a> {
 }
 
 impl<'a> BundleResult<'a> for LoadAndExecuteBundleOutput<'a> {
-    type Transaction = (&'a SanitizedTransaction, &'a LoadedTransaction);
+    type Transaction = (
+        &'a RuntimeTransaction<SanitizedTransaction>,
+        &'a LoadedTransaction,
+    );
 
     fn executed_ok(&self) -> bool {
         self.executed_ok()
