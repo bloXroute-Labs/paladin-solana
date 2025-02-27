@@ -22,6 +22,7 @@ impl RuntimeTransaction<SanitizedVersionedTransaction> {
         sanitized_versioned_tx: SanitizedVersionedTransaction,
         message_hash: MessageHash,
         is_simple_vote_tx: Option<bool>,
+        drop_on_revert: bool,
     ) -> Result<Self> {
         let message_hash = match message_hash {
             MessageHash::Precomputed(hash) => hash,
@@ -60,6 +61,7 @@ impl RuntimeTransaction<SanitizedVersionedTransaction> {
             meta: TransactionMeta {
                 message_hash,
                 is_simple_vote_transaction: is_simple_vote_tx,
+                drop_on_revert,
                 signature_details,
                 compute_budget_instruction_details,
             },
@@ -74,6 +76,7 @@ impl RuntimeTransaction<SanitizedTransaction> {
         tx: VersionedTransaction,
         message_hash: MessageHash,
         is_simple_vote_tx: Option<bool>,
+        drop_on_revert: bool,
         address_loader: impl AddressLoader,
         reserved_account_keys: &HashSet<Pubkey>,
     ) -> Result<Self> {
@@ -82,6 +85,7 @@ impl RuntimeTransaction<SanitizedTransaction> {
                 SanitizedVersionedTransaction::try_from(tx)?,
                 message_hash,
                 is_simple_vote_tx,
+                drop_on_revert,
             )?;
         Self::try_from(
             statically_loaded_runtime_tx,
@@ -142,6 +146,7 @@ impl RuntimeTransaction<SanitizedTransaction> {
             versioned_transaction,
             MessageHash::Compute,
             None,
+            false,
             solana_message::SimpleAddressLoader::Disabled,
             &HashSet::new(),
         )
@@ -244,6 +249,7 @@ mod tests {
                 svt,
                 MessageHash::Compute,
                 is_simple_vote,
+                false,
             )
             .unwrap()
             .meta
@@ -280,6 +286,7 @@ mod tests {
                 non_vote_sanitized_versioned_transaction(),
                 MessageHash::Precomputed(hash),
                 None,
+                false,
             )
             .unwrap();
 
@@ -315,6 +322,7 @@ mod tests {
                     .to_sanitized_versioned_transaction(),
                 MessageHash::Precomputed(hash),
                 None,
+                false,
             )
             .unwrap();
 

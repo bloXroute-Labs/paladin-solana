@@ -43,6 +43,7 @@ impl<D: TransactionData> RuntimeTransaction<SanitizedTransactionView<D>> {
         transaction: SanitizedTransactionView<D>,
         message_hash: MessageHash,
         is_simple_vote_tx: Option<bool>,
+        drop_on_revert: bool,
     ) -> Result<Self> {
         let message_hash = match message_hash {
             MessageHash::Precomputed(hash) => hash,
@@ -67,6 +68,7 @@ impl<D: TransactionData> RuntimeTransaction<SanitizedTransactionView<D>> {
             meta: TransactionMeta {
                 message_hash,
                 is_simple_vote_transaction: is_simple_vote_tx,
+                drop_on_revert,
                 signature_details,
                 compute_budget_instruction_details,
             },
@@ -222,6 +224,7 @@ mod tests {
                 transaction,
                 MessageHash::Precomputed(hash),
                 None,
+                false,
             )
             .unwrap();
 
@@ -253,6 +256,7 @@ mod tests {
                 transaction_view,
                 MessageHash::Compute,
                 None,
+                false,
             )
             .unwrap();
             let runtime_transaction = RuntimeTransaction::<ResolvedTransactionView<_>>::try_from(
@@ -319,6 +323,7 @@ mod tests {
                 transaction_view,
                 MessageHash::Compute,
                 None,
+                false,
             )
             .unwrap();
             let runtime_transaction = RuntimeTransaction::<ResolvedTransactionView<_>>::try_from(

@@ -37,6 +37,7 @@ pub trait DynamicMeta: StaticMeta {}
 pub struct TransactionMeta {
     pub(crate) message_hash: Hash,
     pub(crate) is_simple_vote_transaction: bool,
+    pub(crate) drop_on_revert: bool,
     pub(crate) signature_details: TransactionSignatureDetails,
     pub(crate) compute_budget_instruction_details: ComputeBudgetInstructionDetails,
 }
