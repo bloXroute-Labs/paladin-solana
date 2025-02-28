@@ -1555,6 +1555,17 @@ fn tip_manager_config_from_matches(
     voting_disabled: bool,
 ) -> TipManagerConfig {
     TipManagerConfig {
+        funnel: pubkey_of(matches, "funnel"),
+        rewards_split: match (value_t!(matches, "rewards_split_minimum_lamports", u64), value_t!(matches, "rewards_split_bp", u16)) {
+            (Ok(minimum_lamports), Ok(rewards_split_bp)) => {
+                assert!(minimum_lamports >= 10u64.pow(9), "`--rewards-split-minimum-lamports` should be at least 1 SOL (1e9 lamports)");
+                assert!(rewards_split_bp <= 10_000, "`--rewards-split-bp` should be in basis points (0..10_000)");
+
+                Some((minimum_lamports, rewards_split_bp))
+            }
+            (Err(_), Err(_)) => None,
+            _ => panic!("`rewards_split_minimum_lamports` and `rewards_split_bp` must both be set to split block rewards"),
+        },
         tip_payment_program_id: pubkey_of(matches, "tip_payment_program_pubkey").unwrap_or_else(
             || {
                 if !voting_disabled {
