@@ -6469,8 +6469,8 @@ dependencies = [
  "serde_derive",
  "solana-account-info",
  "solana-clock",
- "solana-frozen-abi",
- "solana-frozen-abi-macro",
+ "solana-frozen-abi 2.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "solana-frozen-abi-macro 2.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "solana-instruction",
  "solana-logger",
  "solana-pubkey",
@@ -6631,8 +6631,8 @@ dependencies = [
  "solana-bucket-map",
  "solana-clock",
  "solana-compute-budget",
- "solana-frozen-abi",
- "solana-frozen-abi-macro",
+ "solana-frozen-abi 2.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "solana-frozen-abi-macro 2.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "solana-hash",
  "solana-inline-spl",
  "solana-lattice-hash",
@@ -6918,8 +6918,8 @@ dependencies = [
  "rayon",
  "serde",
  "serde_derive",
- "solana-frozen-abi",
- "solana-frozen-abi-macro",
+ "solana-frozen-abi 2.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "solana-frozen-abi-macro 2.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "solana-hash",
  "solana-sanitize",
  "solana-sha256-hasher",
@@ -7079,7 +7079,7 @@ dependencies = [
  "solana-compute-budget-program",
  "solana-config-program",
  "solana-feature-set",
- "solana-frozen-abi",
+ "solana-frozen-abi 2.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "solana-loader-v4-program",
  "solana-pubkey",
  "solana-sdk-ids",
@@ -7491,8 +7491,8 @@ checksum = "be3d6c005c60c9895c9beeaa4d157ffeba4dcd2eea6cada3ba4edcc0a3ece39f"
 dependencies = [
  "serde",
  "serde_derive",
- "solana-frozen-abi",
- "solana-frozen-abi-macro",
+ "solana-frozen-abi 2.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "solana-frozen-abi-macro 2.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "solana-hash",
 ]
 
@@ -7512,7 +7512,7 @@ version = "2.2.0"
 dependencies = [
  "qualifier_attr",
  "solana-fee-structure",
- "solana-frozen-abi",
+ "solana-frozen-abi 2.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "solana-program-entrypoint",
 ]
 
@@ -7699,8 +7699,8 @@ dependencies = [
  "solana-entry",
  "solana-feature-set",
  "solana-fee",
- "solana-frozen-abi",
- "solana-frozen-abi-macro",
+ "solana-frozen-abi 2.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "solana-frozen-abi-macro 2.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "solana-geyser-plugin-manager",
  "solana-gossip",
  "solana-ledger",
@@ -7778,8 +7778,8 @@ dependencies = [
  "solana-cost-model",
  "solana-feature-set",
  "solana-fee-structure",
- "solana-frozen-abi",
- "solana-frozen-abi-macro",
+ "solana-frozen-abi 2.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "solana-frozen-abi-macro 2.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "solana-hash",
  "solana-instruction",
  "solana-keypair",
@@ -7978,8 +7978,8 @@ checksum = "6519f3178a03bbb7d36c0068f4276293de8b81aa87d15f11b2f9968778bbe84d"
 dependencies = [
  "serde",
  "serde_derive",
- "solana-frozen-abi",
- "solana-frozen-abi-macro",
+ "solana-frozen-abi 2.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "solana-frozen-abi-macro 2.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "solana-hash",
  "solana-sdk-ids",
  "solana-sdk-macro",
@@ -8005,8 +8005,8 @@ checksum = "1c616297c19a097a8f718c0abff0f23c0f80baccaddc24306a1b4701b0e5af60"
 dependencies = [
  "serde",
  "serde_derive",
- "solana-frozen-abi",
- "solana-frozen-abi-macro",
+ "solana-frozen-abi 2.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "solana-frozen-abi-macro 2.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "solana-sdk-ids",
  "solana-sdk-macro",
  "solana-sysvar-id",
@@ -8105,8 +8105,8 @@ dependencies = [
  "ahash 0.8.11",
  "lazy_static",
  "solana-epoch-schedule",
- "solana-frozen-abi",
- "solana-frozen-abi-macro",
+ "solana-frozen-abi 2.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "solana-frozen-abi-macro 2.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "solana-hash",
  "solana-pubkey",
  "solana-sha256-hasher",
@@ -8130,8 +8130,8 @@ dependencies = [
  "log",
  "serde",
  "serde_derive",
- "solana-frozen-abi",
- "solana-frozen-abi-macro",
+ "solana-frozen-abi 2.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "solana-frozen-abi-macro 2.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
@@ -8142,7 +8142,7 @@ checksum = "051c6d8c8b35b4c302e4de0a9c2dff9178a400611179002210edcb053fb4c86d"
 dependencies = [
  "serde",
  "serde_derive",
- "solana-frozen-abi",
+ "solana-frozen-abi 2.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "solana-message",
  "solana-native-token",
 ]
@@ -8162,6 +8162,23 @@ dependencies = [
 [[package]]
 name = "solana-frozen-abi"
 version = "2.2.0"
+dependencies = [
+ "bs58 0.5.1",
+ "bv",
+ "im",
+ "log",
+ "memmap2",
+ "serde",
+ "serde_derive",
+ "serde_with",
+ "sha2 0.10.8",
+ "solana-frozen-abi-macro 2.2.0",
+ "thiserror 2.0.11",
+]
+
+[[package]]
+name = "solana-frozen-abi"
+version = "2.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7bede4b44a2fe502830680ce1034ebe325eda14efa8b80d27872775077245d57"
 dependencies = [
@@ -8174,8 +8191,17 @@ dependencies = [
  "serde_derive",
  "serde_with",
  "sha2 0.10.8",
- "solana-frozen-abi-macro",
+ "solana-frozen-abi-macro 2.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "thiserror 2.0.11",
+]
+
+[[package]]
+name = "solana-frozen-abi-macro"
+version = "2.2.0"
+dependencies = [
+ "proc-macro2 1.0.93",
+ "quote 1.0.38",
+ "syn 2.0.98",
 ]
 
 [[package]]
@@ -8232,8 +8258,8 @@ dependencies = [
  "solana-cluster-type",
  "solana-epoch-schedule",
  "solana-fee-calculator",
- "solana-frozen-abi",
- "solana-frozen-abi-macro",
+ "solana-frozen-abi 2.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "solana-frozen-abi-macro 2.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "solana-hash",
  "solana-inflation",
  "solana-keypair",
@@ -8324,8 +8350,8 @@ dependencies = [
  "solana-connection-cache",
  "solana-entry",
  "solana-feature-set",
- "solana-frozen-abi",
- "solana-frozen-abi-macro",
+ "solana-frozen-abi 2.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "solana-frozen-abi-macro 2.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "solana-ledger",
  "solana-logger",
  "solana-measure",
@@ -8358,8 +8384,8 @@ checksum = "2ad74d3fe543f080551d479da3bcd0b982508ec2d5c38a0c79c76684cfef0aa0"
 dependencies = [
  "serde",
  "serde_derive",
- "solana-frozen-abi",
- "solana-frozen-abi-macro",
+ "solana-frozen-abi 2.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "solana-frozen-abi-macro 2.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
@@ -8376,8 +8402,8 @@ dependencies = [
  "serde",
  "serde_derive",
  "solana-atomic-u64",
- "solana-frozen-abi",
- "solana-frozen-abi-macro",
+ "solana-frozen-abi 2.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "solana-frozen-abi-macro 2.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "solana-sanitize",
  "wasm-bindgen",
 ]
@@ -8390,8 +8416,8 @@ checksum = "b71a542351ed9d79de87dadaff20cb2e9bb28d608418b4f6355f0bd8d5e09d94"
 dependencies = [
  "serde",
  "serde_derive",
- "solana-frozen-abi",
- "solana-frozen-abi-macro",
+ "solana-frozen-abi 2.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "solana-frozen-abi-macro 2.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
@@ -8416,8 +8442,8 @@ dependencies = [
  "serde",
  "serde_derive",
  "solana-define-syscall",
- "solana-frozen-abi",
- "solana-frozen-abi-macro",
+ "solana-frozen-abi 2.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "solana-frozen-abi-macro 2.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "solana-pubkey",
  "wasm-bindgen",
 ]
@@ -8564,8 +8590,8 @@ dependencies = [
  "solana-cost-model",
  "solana-entry",
  "solana-feature-set",
- "solana-frozen-abi",
- "solana-frozen-abi-macro",
+ "solana-frozen-abi 2.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "solana-frozen-abi-macro 2.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "solana-logger",
  "solana-measure",
  "solana-metrics",
@@ -8788,8 +8814,8 @@ dependencies = [
  "serde",
  "serde_derive",
  "solana-bincode",
- "solana-frozen-abi",
- "solana-frozen-abi-macro",
+ "solana-frozen-abi 2.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "solana-frozen-abi-macro 2.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "solana-hash",
  "solana-instruction",
  "solana-logger",
@@ -8932,8 +8958,6 @@ dependencies = [
 [[package]]
 name = "solana-packet"
 version = "2.2.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b49f415630073dd29449f5555a88165e5dc3fc91fe105252bcab08c3ae30f732"
 dependencies = [
  "bincode",
  "bitflags 2.8.0",
@@ -8941,8 +8965,8 @@ dependencies = [
  "serde",
  "serde_derive",
  "serde_with",
- "solana-frozen-abi",
- "solana-frozen-abi-macro",
+ "solana-frozen-abi 2.2.0",
+ "solana-frozen-abi-macro 2.2.0",
 ]
 
 [[package]]
@@ -8966,8 +8990,8 @@ dependencies = [
  "rayon",
  "serde",
  "solana-clock",
- "solana-frozen-abi",
- "solana-frozen-abi-macro",
+ "solana-frozen-abi 2.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "solana-frozen-abi-macro 2.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "solana-hash",
  "solana-keypair",
  "solana-logger",
@@ -9044,8 +9068,8 @@ checksum = "2f8f49e59491a9c3210b97f8277ef9bf814073883b7a324b927f00163edc27f4"
 dependencies = [
  "serde",
  "serde_derive",
- "solana-frozen-abi",
- "solana-frozen-abi-macro",
+ "solana-frozen-abi 2.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "solana-frozen-abi-macro 2.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
@@ -9137,8 +9161,8 @@ dependencies = [
  "solana-example-mocks",
  "solana-feature-gate-interface",
  "solana-fee-calculator",
- "solana-frozen-abi",
- "solana-frozen-abi-macro",
+ "solana-frozen-abi 2.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "solana-frozen-abi-macro 2.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "solana-hash",
  "solana-instruction",
  "solana-instructions-sysvar",
@@ -9250,8 +9274,8 @@ dependencies = [
  "solana-epoch-rewards",
  "solana-epoch-schedule",
  "solana-feature-set",
- "solana-frozen-abi",
- "solana-frozen-abi-macro",
+ "solana-frozen-abi 2.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "solana-frozen-abi-macro 2.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "solana-hash",
  "solana-instruction",
  "solana-last-restart-slot",
@@ -9333,8 +9357,8 @@ dependencies = [
  "solana-atomic-u64",
  "solana-decode-error",
  "solana-define-syscall",
- "solana-frozen-abi",
- "solana-frozen-abi-macro",
+ "solana-frozen-abi 2.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "solana-frozen-abi-macro 2.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "solana-sanitize",
  "solana-sha256-hasher",
  "wasm-bindgen",
@@ -9448,8 +9472,8 @@ checksum = "c9c0ba8a033fd38dc86270843243af7769fa0575ca61f56064aa87a825649540"
 dependencies = [
  "serde",
  "serde_derive",
- "solana-frozen-abi",
- "solana-frozen-abi-macro",
+ "solana-frozen-abi 2.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "solana-frozen-abi-macro 2.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "solana-sdk-ids",
  "solana-sdk-macro",
  "solana-sysvar-id",
@@ -9466,8 +9490,8 @@ dependencies = [
  "solana-account",
  "solana-clock",
  "solana-epoch-schedule",
- "solana-frozen-abi",
- "solana-frozen-abi-macro",
+ "solana-frozen-abi 2.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "solana-frozen-abi-macro 2.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "solana-genesis-config",
  "solana-pubkey",
  "solana-rent",
@@ -9504,8 +9528,8 @@ checksum = "69c1667d87015f7b673d7633bec1b3bdc53380ef78c2eecf6927767950d5624b"
 dependencies = [
  "serde",
  "serde_derive",
- "solana-frozen-abi",
- "solana-frozen-abi-macro",
+ "solana-frozen-abi 2.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "solana-frozen-abi-macro 2.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
@@ -9783,8 +9807,8 @@ dependencies = [
  "solana-cost-model",
  "solana-feature-set",
  "solana-fee",
- "solana-frozen-abi",
- "solana-frozen-abi-macro",
+ "solana-frozen-abi 2.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "solana-frozen-abi-macro 2.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "solana-inline-spl",
  "solana-lattice-hash",
  "solana-logger",
@@ -10126,8 +10150,8 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "4e98f50b5f03b56077bfe3956287765b1cd2b220d6a8e3c0b5b6993011cea239"
 dependencies = [
  "serde",
- "solana-frozen-abi",
- "solana-frozen-abi-macro",
+ "solana-frozen-abi 2.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "solana-frozen-abi-macro 2.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
@@ -10153,8 +10177,8 @@ dependencies = [
  "serde",
  "serde-big-array",
  "serde_derive",
- "solana-frozen-abi",
- "solana-frozen-abi-macro",
+ "solana-frozen-abi 2.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "solana-frozen-abi-macro 2.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "solana-sanitize",
 ]
 
@@ -10235,8 +10259,8 @@ dependencies = [
  "solana-clock",
  "solana-cpi",
  "solana-decode-error",
- "solana-frozen-abi",
- "solana-frozen-abi-macro",
+ "solana-frozen-abi 2.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "solana-frozen-abi-macro 2.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "solana-instruction",
  "solana-program-error",
  "solana-pubkey",
@@ -10443,8 +10467,8 @@ dependencies = [
  "solana-feature-set",
  "solana-fee-calculator",
  "solana-fee-structure",
- "solana-frozen-abi",
- "solana-frozen-abi-macro",
+ "solana-frozen-abi 2.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "solana-frozen-abi-macro 2.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "solana-hash",
  "solana-instruction",
  "solana-instructions-sysvar",
@@ -10601,8 +10625,8 @@ dependencies = [
  "solana-epoch-rewards",
  "solana-epoch-schedule",
  "solana-fee-calculator",
- "solana-frozen-abi",
- "solana-frozen-abi-macro",
+ "solana-frozen-abi 2.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "solana-frozen-abi-macro 2.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "solana-hash",
  "solana-instruction",
  "solana-instructions-sysvar",
@@ -10896,8 +10920,8 @@ dependencies = [
  "serde_derive",
  "solana-bincode",
  "solana-feature-set",
- "solana-frozen-abi",
- "solana-frozen-abi-macro",
+ "solana-frozen-abi 2.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "solana-frozen-abi-macro 2.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "solana-hash",
  "solana-instruction",
  "solana-keypair",
@@ -10967,8 +10991,8 @@ checksum = "74cd8bc1bb3886d9565856d29db7d8be79a106f75c82da5c906ba8312e14298c"
 dependencies = [
  "serde",
  "serde_derive",
- "solana-frozen-abi",
- "solana-frozen-abi-macro",
+ "solana-frozen-abi 2.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "solana-frozen-abi-macro 2.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "solana-instruction",
  "solana-sanitize",
 ]
@@ -11195,8 +11219,8 @@ dependencies = [
  "serde",
  "serde_derive",
  "solana-feature-set",
- "solana-frozen-abi",
- "solana-frozen-abi-macro",
+ "solana-frozen-abi 2.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "solana-frozen-abi-macro 2.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "solana-sanitize",
  "solana-serde-varint",
 ]
@@ -11257,8 +11281,8 @@ dependencies = [
  "solana-account",
  "solana-bincode",
  "solana-clock",
- "solana-frozen-abi",
- "solana-frozen-abi-macro",
+ "solana-frozen-abi 2.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "solana-frozen-abi-macro 2.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "solana-hash",
  "solana-instruction",
  "solana-keypair",
@@ -11287,8 +11311,8 @@ dependencies = [
  "serde_derive",
  "solana-clock",
  "solana-decode-error",
- "solana-frozen-abi",
- "solana-frozen-abi-macro",
+ "solana-frozen-abi 2.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "solana-frozen-abi-macro 2.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "solana-hash",
  "solana-instruction",
  "solana-pubkey",
@@ -11317,8 +11341,8 @@ dependencies = [
  "solana-clock",
  "solana-epoch-schedule",
  "solana-feature-set",
- "solana-frozen-abi",
- "solana-frozen-abi-macro",
+ "solana-frozen-abi 2.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "solana-frozen-abi-macro 2.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "solana-hash",
  "solana-instruction",
  "solana-keypair",

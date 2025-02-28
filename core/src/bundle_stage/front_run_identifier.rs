@@ -65,7 +65,9 @@ pub(crate) fn is_bundle_front_run<'a>(bundle: &'a impl BundleResult<'a>) -> bool
 
         // Record this TX's access of the writeable account.
         for account in writeable_amm_accounts {
-            AMM_MAP.with_borrow_mut(|map| map.entry_ref(account.key).or_default()[i] = true);
+            // PERF: Could make use of entry_ref once `From<&Pubkey> for Pubkey` lands in
+            // upstream solana-sdk.
+            AMM_MAP.with_borrow_mut(|map| map.entry(*account.key).or_default()[i] = true);
         }
     }
 
@@ -167,7 +169,12 @@ impl<'a> BundleResult<'a> for LoadAndExecuteBundleOutput<'a> {
     }
 }
 
-impl<'a> BundleTransaction for (&'a SanitizedTransaction, &'a LoadedTransaction) {
+impl<'a> BundleTransaction
+    for (
+        &'a RuntimeTransaction<SanitizedTransaction>,
+        &'a LoadedTransaction,
+    )
+{
     fn signers(&self) -> impl Iterator<Item = &Pubkey> {
         self.0
             .message()

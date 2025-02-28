@@ -5,13 +5,10 @@ use {
     solana_perf::packet::PacketBatch,
     solana_poh::poh_recorder::PohRecorder,
     solana_sdk::{
-        account::ReadableAccount, net::DEFAULT_TPU_COALESCE, pubkey::Pubkey, saturating_add_assign,
-        signature::Keypair,
+        account::ReadableAccount, pubkey::Pubkey, saturating_add_assign, signature::Keypair,
     },
     solana_streamer::{
-        nonblocking::quic::{
-            ConnectionPeerType, ConnectionTable, DEFAULT_MAX_CONNECTIONS_PER_IPADDR_PER_MINUTE,
-        },
+        nonblocking::quic::{ConnectionPeerType, ConnectionTable},
         quic::{EndpointKeyUpdater, QuicServerParams, SpawnServerResult},
         streamer::StakedNodes,
     },
@@ -175,7 +172,7 @@ impl P3Quic {
                     Err(RecvError) => break,
                 },
                 recv(self.reg_packet_rx) -> res => match res {
-                    Ok(packets) => self.on_regular_packets(packets),
+                    Ok(packets) => self.on_p3_packets(packets),
                     Err(RecvError) => break,
                 }
             }
@@ -210,9 +207,14 @@ impl P3Quic {
         self.quic_server_mev.join().unwrap();
     }
 
-    fn on_regular_packets(&mut self, packets: PacketBatch) {
+    fn on_p3_packets(&mut self, mut packets: PacketBatch) {
         let len = packets.len() as u64;
         saturating_add_assign!(self.metrics.reg_forwarded, len);
+
+        // Set p3 flag.
+        for packet in packets.iter_mut() {
+            packet.meta_mut().set_p3(true);
+        }
 
         // Forward for verification & inclusion.
         if let Err(TrySendError::Full(_)) = self.packet_tx.try_send(packets) {
@@ -224,9 +226,10 @@ impl P3Quic {
         let len = packets.len() as u64;
         saturating_add_assign!(self.metrics.mev_forwarded, len);
 
-        // Set drop on revert flag.
+        // Set p3 & drop on revert flags.
         for packet in packets.iter_mut() {
-            packet.meta_mut().set_drop_on_revert(true);
+            packet.meta_mut().set_p3(true);
+            packet.meta_mut().set_mev(true);
         }
 
         // Forward for verification & inclusion.

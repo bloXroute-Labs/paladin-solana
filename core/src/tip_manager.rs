@@ -474,7 +474,7 @@ impl TipManager {
         block_builder: &Pubkey,
         block_builder_commission: u64,
         (funnel, funnel_key): (&Funnel, Pubkey),
-    ) -> SanitizedTransaction {
+    ) -> RuntimeTransaction<SanitizedTransaction> {
         let additional_lamports = self.compute_additional_lamports(bank);
 
         let become_receiver = funnel::instructions::become_receiver::ix(
@@ -513,13 +513,18 @@ impl TipManager {
             }
             .to_account_metas(None),
         };
-        SanitizedTransaction::try_from_legacy_transaction(
+
+        RuntimeTransaction::try_create(
             Transaction::new_signed_with_payer(
                 &[become_receiver, change_block_builder_ix],
                 Some(&keypair.pubkey()),
                 &[keypair],
                 bank.last_blockhash(),
-            ),
+            )
+            .into(),
+            MessageHash::Compute,
+            None,
+            bank,
             bank.get_reserved_account_keys(),
         )
         .unwrap()

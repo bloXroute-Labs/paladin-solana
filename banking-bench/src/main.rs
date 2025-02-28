@@ -507,7 +507,6 @@ fn main() {
         HashSet::default(),
         BundleAccountLocker::default(),
         |_| 0,
-        Duration::from_millis(50),
     );
 
     // This is so that the signal_receiver does not go out of scope after the closure.

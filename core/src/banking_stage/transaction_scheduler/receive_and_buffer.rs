@@ -426,7 +426,7 @@ impl TransactionViewReceiveAndBuffer {
                         alt_resolved_slot,
                         sanitized_epoch,
                         transaction_account_lock_limit,
-                        packet.drop_on_revert(),
+                        todo!(),
                     ) {
                         Ok(state) => {
                             num_buffered += 1;
