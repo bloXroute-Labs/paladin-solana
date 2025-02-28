@@ -15,7 +15,6 @@ use {
         consumer::Consumer,
         decision_maker::{BufferedPacketsDecision, DecisionMaker},
         forwarder::Forwarder,
-        immutable_deserialized_packet::ImmutableDeserializedPacket,
         transaction_scheduler::transaction_state_container::StateContainer,
         ForwardOption, LikeClusterInfo, TOTAL_BUFFERED_PACKETS,
     },
@@ -522,6 +521,7 @@ mod tests {
             PacketDeserializer::new(receiver),
             bank_forks,
             false,
+            Duration::ZERO,
         )
     }
 

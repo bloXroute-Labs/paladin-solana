@@ -66,6 +66,10 @@ pub(crate) struct SanitizedTransactionReceiveAndBuffer {
     bank_forks: Arc<RwLock<BankForks>>,
 
     forwarding_enabled: bool,
+
+    batch: Vec<ImmutableDeserializedPacket>,
+    batch_start: Instant,
+    batch_interval: Duration,
 }
 
 impl ReceiveAndBuffer for SanitizedTransactionReceiveAndBuffer {
@@ -106,6 +110,10 @@ impl ReceiveAndBuffer for SanitizedTransactionReceiveAndBuffer {
             saturating_add_assign!(timing_metrics.receive_time_us, receive_time_us);
         });
 
+        // Check if the batch can be progressed to buffer stage.
+        self.maybe_queue_batch(container, timing_metrics, count_metrics);
+
+        // Handle the new packets.
         let num_received = match received_packet_results {
             Ok(receive_packet_results) => {
                 let num_received_packets = receive_packet_results.deserialized_packets.len();
@@ -115,14 +123,11 @@ impl ReceiveAndBuffer for SanitizedTransactionReceiveAndBuffer {
                 });
 
                 if should_buffer {
-                    let (_, buffer_time_us) = measure_us!(self.buffer_packets(
-                        container,
-                        timing_metrics,
-                        count_metrics,
-                        receive_packet_results.deserialized_packets
-                    ));
+                    let ((), batch_time_us) = measure_us!(
+                        self.batch_packets(receive_packet_results.deserialized_packets)
+                    );
                     timing_metrics.update(|timing_metrics| {
-                        saturating_add_assign!(timing_metrics.buffer_time_us, buffer_time_us);
+                        saturating_add_assign!(timing_metrics.batch_time_us, batch_time_us);
                     });
                 } else {
                     count_metrics.update(|count_metrics| {
@@ -147,26 +152,58 @@ impl SanitizedTransactionReceiveAndBuffer {
         packet_receiver: PacketDeserializer,
         bank_forks: Arc<RwLock<BankForks>>,
         forwarding_enabled: bool,
+        batch_interval: Duration,
     ) -> Self {
         Self {
             packet_receiver,
             bank_forks,
             forwarding_enabled,
+
+            batch: Vec::default(),
+            batch_start: Instant::now(),
+            batch_interval,
+        }
+    }
+
+    fn batch_packets(&mut self, packets: Vec<ImmutableDeserializedPacket>) {
+        // If this is the first packet in the batch, set the start timestamp for
+        // the batch.
+        if self.batch.is_empty() {
+            self.batch_start = Instant::now();
+        }
+
+        self.batch.extend(packets);
+    }
+
+    fn maybe_queue_batch(
+        &mut self,
+        container: &mut TransactionStateContainer<RuntimeTransaction<SanitizedTransaction>>,
+        timing_metrics: &mut SchedulerTimingMetrics,
+        count_metrics: &mut SchedulerCountMetrics,
+    ) {
+        if !self.batch.is_empty() && self.batch_start.elapsed() >= self.batch_interval {
+            let (_, buffer_time_us) = measure_us!(Self::buffer_packets(
+                &self.bank_forks,
+                container,
+                count_metrics,
+                self.batch.drain(..),
+            ));
+            timing_metrics
+                .update(|metrics| saturating_add_assign!(metrics.buffer_time_us, buffer_time_us));
         }
     }
 
     fn buffer_packets(
-        &mut self,
+        bank_forks: &Arc<RwLock<BankForks>>,
         container: &mut TransactionStateContainer<RuntimeTransaction<SanitizedTransaction>>,
-        _timing_metrics: &mut SchedulerTimingMetrics,
         count_metrics: &mut SchedulerCountMetrics,
-        packets: Vec<ImmutableDeserializedPacket>,
+        packets: impl Iterator<Item = ImmutableDeserializedPacket>,
     ) {
         // Convert to Arcs
-        let packets: Vec<_> = packets.into_iter().map(Arc::new).collect();
+        let packets: Vec<_> = packets.map(Arc::new).collect();
         // Sanitize packets, generate IDs, and insert into the container.
         let (root_bank, working_bank) = {
-            let bank_forks = self.bank_forks.read().unwrap();
+            let bank_forks = bank_forks.read().unwrap();
             let root_bank = bank_forks.root_bank();
             let working_bank = bank_forks.working_bank();
             (root_bank, working_bank)
@@ -426,7 +463,6 @@ impl TransactionViewReceiveAndBuffer {
                         alt_resolved_slot,
                         sanitized_epoch,
                         transaction_account_lock_limit,
-                        todo!(),
                     ) {
                         Ok(state) => {
                             num_buffered += 1;
@@ -467,7 +503,6 @@ impl TransactionViewReceiveAndBuffer {
         alt_resolved_slot: Slot,
         sanitized_epoch: Epoch,
         transaction_account_lock_limit: usize,
-        drop_on_revert: bool,
     ) -> Result<TransactionViewState, ()> {
         // Parsing and basic sanitization checks
         let Ok(view) = SanitizedTransactionView::try_new_sanitized(bytes) else {

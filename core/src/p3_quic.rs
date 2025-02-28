@@ -2,6 +2,7 @@ use {
     crate::tpu::MAX_QUIC_CONNECTIONS_PER_PEER,
     crossbeam_channel::{RecvError, TrySendError},
     paladin_lockup_program::state::LockupPool,
+    solana_net_utils::{bind_to_with_config, SocketConfig},
     solana_perf::packet::PacketBatch,
     solana_poh::poh_recorder::PohRecorder,
     solana_sdk::{
@@ -15,7 +16,7 @@ use {
     spl_discriminator::discriminator::SplDiscriminate,
     std::{
         collections::HashMap,
-        net::UdpSocket,
+        net::{IpAddr, Ipv4Addr},
         sync::{
             atomic::{AtomicBool, Ordering},
             Arc, Mutex, RwLock,
@@ -24,8 +25,8 @@ use {
     },
 };
 
-const P3_SOCKET: &str = "0.0.0.0:4819";
-const P3_MEV_SOCKET: &str = "0.0.0.0:4820";
+const P3_PORT: u16 = 4819;
+const MEV_PORT: u16 = 4820;
 
 const MAX_STAKED_CONNECTIONS: usize = 256;
 const MAX_UNSTAKED_CONNECTIONS: usize = 0;
@@ -38,14 +39,14 @@ const POOL_KEY: Pubkey = solana_sdk::pubkey!("EJi4Rj2u1VXiLpKtaqeQh3w4XxAGLFqnAG
 
 pub(crate) struct P3Quic {
     exit: Arc<AtomicBool>,
-    quic_server_regular: std::thread::JoinHandle<()>,
-    quic_server_mev: std::thread::JoinHandle<()>,
+    quic_p3: std::thread::JoinHandle<()>,
+    quic_mev: std::thread::JoinHandle<()>,
 
     staked_nodes: Arc<RwLock<StakedNodes>>,
     staked_nodes_last_update: Instant,
     poh_recorder: Arc<RwLock<PohRecorder>>,
     staked_connection_table: Arc<Mutex<ConnectionTable>>,
-    reg_packet_rx: crossbeam_channel::Receiver<PacketBatch>,
+    p3_packet_rx: crossbeam_channel::Receiver<PacketBatch>,
     mev_packet_rx: crossbeam_channel::Receiver<PacketBatch>,
     packet_tx: crossbeam_channel::Sender<PacketBatch>,
 
@@ -61,8 +62,18 @@ impl P3Quic {
         keypair: &Keypair,
     ) -> (std::thread::JoinHandle<()>, [Arc<EndpointKeyUpdater>; 2]) {
         // Bind the P3 QUIC UDP socket.
-        let socket_regular = UdpSocket::bind(P3_SOCKET).unwrap();
-        let socket_mev = UdpSocket::bind(P3_MEV_SOCKET).unwrap();
+        let socket_p3 = bind_to_with_config(
+            IpAddr::V4(Ipv4Addr::UNSPECIFIED),
+            P3_PORT,
+            SocketConfig::default(),
+        )
+        .unwrap();
+        let socket_mev = bind_to_with_config(
+            IpAddr::V4(Ipv4Addr::UNSPECIFIED),
+            MEV_PORT,
+            SocketConfig::default(),
+        )
+        .unwrap();
 
         // Setup initial staked nodes (empty).
         let stakes = Arc::default();
@@ -75,16 +86,16 @@ impl P3Quic {
         let staked_connection_table: Arc<Mutex<ConnectionTable>> =
             Arc::new(Mutex::new(ConnectionTable::new()));
 
-        // Spawn the P3 QUIC server (regular).
-        let (reg_packet_tx, reg_packet_rx) = crossbeam_channel::unbounded();
+        // Spawn the QUIC server (P3).
+        let (reg_packet_tx, p3_packet_rx) = crossbeam_channel::unbounded();
         let SpawnServerResult {
             endpoints: _,
-            thread: quic_server_regular,
-            key_updater: key_updater_regular,
+            thread: quic_p3,
+            key_updater: key_updater_p3,
         } = solana_streamer::quic::spawn_server(
             "p3Quic-streamer",
             "p3_quic",
-            socket_regular,
+            socket_p3,
             keypair,
             // NB: Packets are verified using the usual TPU lane.
             reg_packet_tx,
@@ -101,11 +112,11 @@ impl P3Quic {
         )
         .unwrap();
 
-        // Spawn the P3 QUIC server (mev).
+        // Spawn the QUIC server (MEV).
         let (mev_packet_tx, mev_packet_rx) = crossbeam_channel::unbounded();
         let SpawnServerResult {
             endpoints: _,
-            thread: quic_server_mev,
+            thread: quic_mev,
             key_updater: key_updater_mev,
         } = solana_streamer::quic::spawn_server(
             "p3Quic-streamer",
@@ -130,14 +141,14 @@ impl P3Quic {
         // Spawn the P3 management thread.
         let p3 = Self {
             exit: exit.clone(),
-            quic_server_regular,
-            quic_server_mev,
+            quic_p3,
+            quic_mev,
 
             staked_nodes,
             staked_nodes_last_update: Instant::now(),
             poh_recorder,
             staked_connection_table,
-            reg_packet_rx,
+            p3_packet_rx,
             mev_packet_rx,
             packet_tx,
 
@@ -150,7 +161,7 @@ impl P3Quic {
                 .name("P3Quic".to_owned())
                 .spawn(move || p3.run())
                 .unwrap(),
-            [key_updater_regular, key_updater_mev],
+            [key_updater_p3, key_updater_mev],
         )
     }
 
@@ -171,7 +182,7 @@ impl P3Quic {
                     Ok(packets) => self.on_mev_packets(packets),
                     Err(RecvError) => break,
                 },
-                recv(self.reg_packet_rx) -> res => match res {
+                recv(self.p3_packet_rx) -> res => match res {
                     Ok(packets) => self.on_p3_packets(packets),
                     Err(RecvError) => break,
                 }
@@ -203,8 +214,8 @@ impl P3Quic {
             }
         }
 
-        self.quic_server_regular.join().unwrap();
-        self.quic_server_mev.join().unwrap();
+        self.quic_p3.join().unwrap();
+        self.quic_mev.join().unwrap();
     }
 
     fn on_p3_packets(&mut self, mut packets: PacketBatch) {
@@ -282,10 +293,7 @@ impl P3Quic {
         for connection in connection_table_l.table().values().flatten() {
             match connection.peer_type {
                 ConnectionPeerType::Staked(stake) => {
-                    if stakes
-                        .get(&connection.identity)
-                        .map_or(true, |connection_stake| connection_stake != &stake)
-                    {
+                    if stakes.get(&connection.identity) != Some(&stake) {
                         info!(
                             "Purging connection due to stake; identity={}",
                             connection.identity

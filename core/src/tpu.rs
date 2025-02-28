@@ -381,6 +381,7 @@ impl Tpu {
                     preallocated_bundle_cost,
                 )
             },
+            batch_interval,
         );
 
         let bundle_stage = BundleStage::new(
