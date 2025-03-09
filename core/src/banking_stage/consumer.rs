@@ -697,6 +697,8 @@ impl Consumer {
                 .iter()
                 .zip(batch.sanitized_transactions())
                 .filter_map(|(processing_result, tx)| {
+                    debug!("proccessed tx: {:?}", tx);
+
                     if processing_result.was_processed() {
                         Some(tx.to_versioned_transaction())
                     } else {
