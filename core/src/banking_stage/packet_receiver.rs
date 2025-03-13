@@ -44,6 +44,7 @@ impl PacketReceiver {
                     |packet| {
                         packet.check_insufficent_compute_unit_limit()?;
                         packet.check_excessive_precompiles()?;
+                        debug!("received tx at banking stage: {:?}", packet.transaction());
                         Ok(packet)
                     },
                 )
