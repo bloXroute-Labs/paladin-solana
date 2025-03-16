@@ -9,8 +9,11 @@ use {
         signature::Keypair,
     },
     solana_streamer::{
-        nonblocking::quic::{
-            ConnectionPeerType, ConnectionTable, DEFAULT_MAX_CONNECTIONS_PER_IPADDR_PER_MINUTE,
+        nonblocking::{
+            quic::{
+                ConnectionPeerType, ConnectionTable, DEFAULT_MAX_CONNECTIONS_PER_IPADDR_PER_MINUTE,
+            },
+            stream_throttle::StakedStreamLoadEMAArgs,
         },
         quic::{EndpointKeyUpdater, SpawnServerResult},
         streamer::StakedNodes,
@@ -32,11 +35,8 @@ const P3_MEV_SOCKET: &str = "0.0.0.0:4820";
 
 const MAX_STAKED_CONNECTIONS: usize = 256;
 const MAX_UNSTAKED_CONNECTIONS: usize = 0;
-/// This results in 100 streams per 100ms, i.e. 1000 global TPS. Users with less
-/// than 1% stake will be rounded up to 1 stream per 100ms.
-const MAX_STREAMS_PER_MS: u64 = 1;
 
-const STAKED_NODES_UPDATE_INTERVAL: Duration = Duration::from_secs(300); // 5 minutes
+const STAKED_NODES_UPDATE_INTERVAL: Duration = Duration::from_secs(900); // 15 minutes
 const POOL_KEY: Pubkey = solana_sdk::pubkey!("EJi4Rj2u1VXiLpKtaqeQh3w4XxAGLFqnAG1jCorSvVmg");
 
 pub(crate) struct P3Quic {
@@ -96,11 +96,15 @@ impl P3Quic {
             staked_nodes.clone(),
             MAX_STAKED_CONNECTIONS,
             MAX_UNSTAKED_CONNECTIONS,
-            MAX_STREAMS_PER_MS,
+            StakedStreamLoadEMAArgs {
+                max_streams_per_ms: 1,
+                stream_throttling_interval_ms: 1000,
+            },
             DEFAULT_MAX_CONNECTIONS_PER_IPADDR_PER_MINUTE,
             // Streams will be kept alive for 300s (5min) if no data is sent.
             Duration::from_secs(300),
             DEFAULT_TPU_COALESCE,
+            true,
         )
         .unwrap();
 
@@ -122,11 +126,15 @@ impl P3Quic {
             staked_nodes.clone(),
             MAX_STAKED_CONNECTIONS,
             MAX_UNSTAKED_CONNECTIONS,
-            MAX_STREAMS_PER_MS,
+            StakedStreamLoadEMAArgs {
+                max_streams_per_ms: 1,
+                stream_throttling_interval_ms: 1000,
+            },
             DEFAULT_MAX_CONNECTIONS_PER_IPADDR_PER_MINUTE,
             // Streams will be kept alive for 300s (5min) if no data is sent.
             Duration::from_secs(300),
             DEFAULT_TPU_COALESCE,
+            true,
         )
         .unwrap();
 
@@ -261,11 +269,19 @@ impl P3Quic {
         };
 
         // Setup a new staked nodes map.
+        let mut stake_total = 0;
         let stakes = pool
             .entries
             .iter()
-            .take_while(|entry| entry.lockup != Pubkey::default())
-            .clone()
+            .take_while(|entry| {
+                stake_total += entry.amount;
+
+                // Take while lockup is initialized and the locked amount exceeds
+                // 1% of total stake.
+                entry.lockup != Pubkey::default()
+                    && entry.amount > 0
+                    && entry.amount * 100 / stake_total > 1
+            })
             .filter(|entry| entry.metadata != [0; 32])
             .map(|entry| (Pubkey::new_from_array(entry.metadata), entry.amount))
             .fold(
@@ -277,6 +293,7 @@ impl P3Quic {
                 },
             );
         let stakes = Arc::new(stakes);
+        debug!("Updated stakes; stakes={stakes:?}");
 
         // Swap the old for the new.
         *self.staked_nodes.write().unwrap() = StakedNodes::new(stakes.clone(), HashMap::default());
@@ -285,7 +302,7 @@ impl P3Quic {
         let connection_table_l = self.staked_connection_table.lock().unwrap();
         for connection in connection_table_l.table().values().flatten() {
             match connection.peer_type {
-                ConnectionPeerType::Staked(stake) => {
+                ConnectionPeerType::P3(stake) => {
                     if stakes
                         .get(&connection.identity)
                         .map_or(true, |connection_stake| connection_stake != &stake)
@@ -297,8 +314,8 @@ impl P3Quic {
                         connection.cancel.cancel();
                     }
                 }
-                ConnectionPeerType::Unstaked => {
-                    eprintln!("BUG: Unstaked connection in staked connection table");
+                ConnectionPeerType::Staked(_) | ConnectionPeerType::Unstaked => {
+                    eprintln!("BUG: Non-P3 connection in staked connection table");
                     connection.cancel.cancel();
                 }
             }
