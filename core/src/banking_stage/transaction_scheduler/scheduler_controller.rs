@@ -492,6 +492,8 @@ where
         let (received_packet_results, receive_time_us) = measure_us!(self
             .packet_receiver
             .receive_packets(recv_timeout, MAX_RECEIVE_PACKETS, |packet| {
+                debug!("received tx at banking stage at receive_and_buffer_packets::scheduler_controller.rs: {:?}", packet.transaction().get_signatures());
+
                 packet.check_excessive_precompiles()?;
                 Ok(packet)
             }));
